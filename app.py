@@ -65,36 +65,36 @@ code, pre, kbd,
     margin-bottom: 2.5rem;
 }
 .hero-eyebrow {
-    font-size: 0.67rem;
-    font-weight: 600;
+    font-size: 0.75rem;
+    font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.18em;
-    color: #bbb;
+    color: #444;
     margin-bottom: 0.65rem;
 }
 .hero-title {
-    font-size: 2rem;
-    font-weight: 600;
+    font-size: 2.2rem;
+    font-weight: 700;
     color: #0a0a0a;
     letter-spacing: -0.03em;
     line-height: 1.15;
     margin: 0 0 0.5rem 0;
 }
 .hero-desc {
-    font-size: 0.82rem;
-    color: #aaa;
-    font-weight: 300;
+    font-size: 0.88rem;
+    color: #555;
+    font-weight: 400;
     font-style: italic;
     margin: 0;
 }
 
 /* ── Upload labels ── */
 .upload-label {
-    font-size: 0.67rem;
-    font-weight: 600;
+    font-size: 0.75rem;
+    font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.14em;
-    color: #bbb;
+    color: #333;
     margin-bottom: 0.45rem;
     display: flex;
     align-items: center;
@@ -103,7 +103,7 @@ code, pre, kbd,
 .upload-dot {
     width: 5px; height: 5px;
     border-radius: 50%;
-    background: #ddd;
+    background: #555;
     display: inline-block;
 }
 
@@ -113,12 +113,13 @@ code, pre, kbd,
     align-items: center;
     gap: 0.4rem;
     margin-top: 0.4rem;
-    background: #f8f8f8;
-    border: 1px solid #ebebeb;
+    background: #f2f2f2;
+    border: 1px solid #ddd;
     border-radius: 20px;
-    padding: 0.22rem 0.75rem;
-    font-size: 0.72rem;
-    color: #888;
+    padding: 0.25rem 0.8rem;
+    font-size: 0.76rem;
+    color: #333;
+    font-weight: 500;
 }
 .file-pill-dot {
     width: 6px; height: 6px;
@@ -212,21 +213,21 @@ div.stDownloadButton > button:hover {
     line-height: 1;
 }
 .stat-lbl {
-    font-size: 0.6rem;
+    font-size: 0.65rem;
     text-transform: uppercase;
     letter-spacing: 0.12em;
-    color: #ccc;
+    color: #777;
     margin-top: 0.3rem;
-    font-weight: 500;
+    font-weight: 600;
 }
 
 /* ── Section heading ── */
 .section-head {
-    font-size: 0.67rem;
-    font-weight: 600;
+    font-size: 0.75rem;
+    font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.14em;
-    color: #bbb;
+    color: #333;
     margin: 2rem 0 0.75rem 0;
     display: flex;
     align-items: center;
@@ -265,9 +266,9 @@ details > div {
     border-top: none !important;
     border-radius: 0 0 6px 6px !important;
     padding: 0.9rem 1rem !important;
-    font-size: 0.83rem !important;
-    color: #555 !important;
-    line-height: 1.65 !important;
+    font-size: 0.85rem !important;
+    color: #222 !important;
+    line-height: 1.7 !important;
 }
 
 /* ── Alerts ── */
@@ -282,25 +283,28 @@ section[data-testid="stSidebar"] {
     border-right: 1px solid #ebebeb !important;
 }
 section[data-testid="stSidebar"] .stMarkdown p {
-    font-size: 0.79rem !important;
-    color: #666 !important;
+    font-size: 0.85rem !important;
+    color: #333 !important;
     line-height: 1.7 !important;
+    font-weight: 400 !important;
 }
 section[data-testid="stSidebar"] strong {
-    color: #222 !important;
-    font-weight: 600 !important;
+    color: #0a0a0a !important;
+    font-weight: 700 !important;
+    font-size: 0.88rem !important;
 }
 
 /* ── Footer ── */
 .footer {
     text-align: center;
-    font-size: 0.69rem;
-    color: #ccc;
+    font-size: 0.78rem;
+    color: #777;
     margin-top: 3rem;
     padding-top: 1.25rem;
     border-top: 1px solid #ebebeb;
-    letter-spacing: 0.04em;
+    letter-spacing: 0.03em;
     line-height: 1.8;
+    font-weight: 400;
 }
 </style>
 """, unsafe_allow_html=True)
@@ -326,8 +330,8 @@ with st.sidebar:
     st.markdown("Max tokens: 3,000")
     st.markdown("Format: JSON")
     st.markdown(
-        "<div style='margin-top:2.5rem;font-size:0.67rem;color:#ccc;"
-        "text-transform:uppercase;letter-spacing:0.1em;'>v1.0</div>",
+        "<div style='margin-top:2.5rem;font-size:0.72rem;color:#555;"
+        "text-transform:uppercase;letter-spacing:0.1em;font-weight:600;'>v1.0</div>",
         unsafe_allow_html=True
     )
 
