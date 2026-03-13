@@ -91,7 +91,7 @@ streamlit run app.py
 
 # Deployment
 
-The application can be deployed easily using **Streamlit Cloud**.
+The application is deployed upon **Streamlit Cloud**.
 
 ---
 
@@ -112,7 +112,9 @@ The application can be deployed easily using **Streamlit Cloud**.
 
 ---
 
-# Demo
+# Deployed URL
+
+https://ddr-report-with-ai.streamlit.app/
 
 ---
 
