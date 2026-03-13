@@ -23,150 +23,288 @@ from reportlab.lib.enums import TA_CENTER
 
 load_dotenv()
 
-# ── Page config ──────────────────────────────
-st.set_page_config(page_title="DDR Report Generator", layout="wide")
+st.set_page_config(
+    page_title="DDR — Diagnostic Report",
+    layout="centered",
+    initial_sidebar_state="collapsed"
+)
 
-# ── Minimal CSS ──────────────────────────────
 st.markdown("""
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;0,600;1,300&display=swap');
 
-html, body, [class*="css"] { font-family: 'Inter', sans-serif; }
+*, *::before, *::after { box-sizing: border-box; }
+html, body, [class*="css"] { font-family: 'Inter', sans-serif !important; }
 
-.stApp { background-color: #f9f9f8; }
+/* Kill green code badges */
+code, pre, kbd,
+[data-testid="stMarkdownContainer"] code {
+    font-family: 'SF Mono', 'Fira Code', monospace !important;
+    background: #f2f2f2 !important;
+    color: #444 !important;
+    border: none !important;
+    border-radius: 3px !important;
+    padding: 1px 6px !important;
+    font-size: 0.76rem !important;
+}
 
+/* Pure white background */
+.stApp {
+    background: #ffffff !important;
+}
 .block-container {
-    max-width: 900px;
-    padding-top: 3rem;
-    padding-bottom: 4rem;
+    max-width: 800px !important;
+    padding: 0 1.5rem 5rem 1.5rem !important;
+    background: #ffffff !important;
 }
 
-.page-header {
-    margin-bottom: 2rem;
-    border-bottom: 1px solid #e2e2de;
-    padding-bottom: 1.25rem;
+/* ── Hero ── */
+.hero {
+    padding: 3.5rem 0 2rem 0;
+    border-bottom: 1px solid #ebebeb;
+    margin-bottom: 2.5rem;
 }
-.page-header h1 {
-    font-size: 1.5rem;
-    font-weight: 600;
-    color: #111;
-    margin: 0 0 0.25rem 0;
-    letter-spacing: -0.02em;
-}
-.page-header p {
-    font-size: 0.8rem;
-    color: #999;
-    margin: 0;
-    font-weight: 400;
-}
-
-.field-label {
-    font-size: 0.7rem;
+.hero-eyebrow {
+    font-size: 0.67rem;
     font-weight: 600;
     text-transform: uppercase;
-    letter-spacing: 0.1em;
-    color: #aaa;
-    margin-bottom: 0.4rem;
-}
-
-.file-meta {
-    font-size: 0.76rem;
+    letter-spacing: 0.18em;
     color: #bbb;
-    margin-top: 0.35rem;
+    margin-bottom: 0.65rem;
+}
+.hero-title {
+    font-size: 2rem;
+    font-weight: 600;
+    color: #0a0a0a;
+    letter-spacing: -0.03em;
+    line-height: 1.15;
+    margin: 0 0 0.5rem 0;
+}
+.hero-desc {
+    font-size: 0.82rem;
+    color: #aaa;
+    font-weight: 300;
+    font-style: italic;
+    margin: 0;
 }
 
-.metrics-row {
+/* ── Upload labels ── */
+.upload-label {
+    font-size: 0.67rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: #bbb;
+    margin-bottom: 0.45rem;
     display: flex;
-    gap: 1px;
-    background: #e2e2de;
-    border: 1px solid #e2e2de;
-    border-radius: 6px;
-    overflow: hidden;
-    margin: 1.25rem 0;
+    align-items: center;
+    gap: 0.4rem;
 }
-.metric-item {
-    flex: 1;
+.upload-dot {
+    width: 5px; height: 5px;
+    border-radius: 50%;
+    background: #ddd;
+    display: inline-block;
+}
+
+/* File pill */
+.file-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    margin-top: 0.4rem;
+    background: #f8f8f8;
+    border: 1px solid #ebebeb;
+    border-radius: 20px;
+    padding: 0.22rem 0.75rem;
+    font-size: 0.72rem;
+    color: #888;
+}
+.file-pill-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: #111;
+    flex-shrink: 0;
+}
+
+/* ── File uploader ── */
+[data-testid="stFileUploader"] {
+    background: #fafafa !important;
+    border: 1px solid #e8e8e8 !important;
+    border-radius: 8px !important;
+    transition: border-color 0.2s !important;
+}
+[data-testid="stFileUploader"]:focus-within {
+    border-color: #111 !important;
+}
+
+/* ── ALL buttons — black ── */
+div.stButton > button,
+div.stButton > button[kind="primary"],
+div.stButton > button[kind="secondary"] {
+    background: #0a0a0a !important;
+    color: #fff !important;
+    border: none !important;
+    border-radius: 6px !important;
+    font-family: 'Inter', sans-serif !important;
+    font-size: 0.78rem !important;
+    font-weight: 500 !important;
+    letter-spacing: 0.1em !important;
+    text-transform: uppercase !important;
+    padding: 0.75rem 2rem !important;
+    width: 100% !important;
+    transition: background 0.2s, transform 0.15s, box-shadow 0.15s !important;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.1) !important;
+}
+div.stButton > button:hover {
+    background: #222 !important;
+    transform: translateY(-1px) !important;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.12) !important;
+}
+div.stButton > button:active {
+    transform: translateY(0) !important;
+    box-shadow: none !important;
+}
+
+/* ── Download button — black ── */
+div.stDownloadButton > button {
+    background: #0a0a0a !important;
+    color: #fff !important;
+    border: none !important;
+    border-radius: 6px !important;
+    font-family: 'Inter', sans-serif !important;
+    font-size: 0.78rem !important;
+    font-weight: 500 !important;
+    letter-spacing: 0.08em !important;
+    text-transform: uppercase !important;
+    width: 100% !important;
+    padding: 0.75rem 2rem !important;
+    transition: background 0.2s, transform 0.15s, box-shadow 0.15s !important;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.1) !important;
+}
+div.stDownloadButton > button:hover {
+    background: #222 !important;
+    transform: translateY(-1px) !important;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.12) !important;
+}
+
+/* ── Stat row ── */
+.stat-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1px;
+    background: #ebebeb;
+    border: 1px solid #ebebeb;
+    border-radius: 8px;
+    overflow: hidden;
+    margin: 1.5rem 0 1.25rem 0;
+}
+.stat-cell {
     background: #fff;
-    padding: 1rem;
+    padding: 1.1rem 0.5rem 0.9rem 0.5rem;
     text-align: center;
 }
-.metric-num {
-    font-size: 1.5rem;
+.stat-num {
+    font-size: 1.6rem;
     font-weight: 600;
-    color: #111;
+    color: #0a0a0a;
+    letter-spacing: -0.03em;
     line-height: 1;
 }
-.metric-lbl {
-    font-size: 0.67rem;
+.stat-lbl {
+    font-size: 0.6rem;
     text-transform: uppercase;
-    letter-spacing: 0.1em;
+    letter-spacing: 0.12em;
+    color: #ccc;
+    margin-top: 0.3rem;
+    font-weight: 500;
+}
+
+/* ── Section heading ── */
+.section-head {
+    font-size: 0.67rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
     color: #bbb;
-    margin-top: 0.25rem;
+    margin: 2rem 0 0.75rem 0;
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+}
+.section-head::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: #ebebeb;
 }
 
-.stButton > button[kind="primary"] {
-    background: #111;
-    color: #fff;
-    border: none;
-    border-radius: 5px;
-    font-family: 'Inter', sans-serif;
-    font-size: 0.8rem;
-    font-weight: 500;
-    letter-spacing: 0.05em;
-    padding: 0.6rem 1.5rem;
-    transition: background 0.2s;
-}
-.stButton > button[kind="primary"]:hover { background: #333; }
-
-.stDownloadButton > button {
-    background: #fff;
-    color: #111;
-    border: 1px solid #d0d0cc;
-    border-radius: 5px;
-    font-family: 'Inter', sans-serif;
-    font-size: 0.8rem;
-    font-weight: 500;
-    letter-spacing: 0.04em;
-    transition: border-color 0.2s;
-}
-.stDownloadButton > button:hover { border-color: #888; }
-
-.streamlit-expanderHeader {
+/* ── Expanders ── */
+details { margin-bottom: 4px !important; }
+details summary {
     background: #fff !important;
-    border: 1px solid #e2e2de !important;
-    border-radius: 5px !important;
+    border: 1px solid #ebebeb !important;
+    border-radius: 6px !important;
     font-family: 'Inter', sans-serif !important;
-    font-size: 0.83rem !important;
+    font-size: 0.82rem !important;
     font-weight: 500 !important;
     color: #111 !important;
+    padding: 0.7rem 1rem !important;
+    cursor: pointer !important;
+    transition: background 0.15s !important;
 }
-.streamlit-expanderContent {
-    background: #fafaf9 !important;
-    border: 1px solid #e2e2de !important;
+details summary:hover { background: #fafafa !important; }
+details[open] summary {
+    border-bottom-left-radius: 0 !important;
+    border-bottom-right-radius: 0 !important;
+    border-bottom-color: #f2f2f2 !important;
+}
+details > div {
+    background: #fafafa !important;
+    border: 1px solid #ebebeb !important;
     border-top: none !important;
-    border-radius: 0 0 5px 5px !important;
+    border-radius: 0 0 6px 6px !important;
+    padding: 0.9rem 1rem !important;
+    font-size: 0.83rem !important;
+    color: #555 !important;
+    line-height: 1.65 !important;
 }
 
+/* ── Alerts ── */
+div[data-testid="stAlert"] {
+    border-radius: 6px !important;
+    font-size: 0.81rem !important;
+}
+
+/* ── Sidebar ── */
 section[data-testid="stSidebar"] {
-    background: #fff;
-    border-right: 1px solid #e2e2de;
+    background: #fff !important;
+    border-right: 1px solid #ebebeb !important;
+}
+section[data-testid="stSidebar"] .stMarkdown p {
+    font-size: 0.79rem !important;
+    color: #666 !important;
+    line-height: 1.7 !important;
+}
+section[data-testid="stSidebar"] strong {
+    color: #222 !important;
+    font-weight: 600 !important;
 }
 
-[data-testid="stFileUploader"] {
-    border: 1px dashed #d0d0cc;
-    border-radius: 5px;
-    background: #fff;
+/* ── Footer ── */
+.footer {
+    text-align: center;
+    font-size: 0.69rem;
+    color: #ccc;
+    margin-top: 3rem;
+    padding-top: 1.25rem;
+    border-top: 1px solid #ebebeb;
+    letter-spacing: 0.04em;
+    line-height: 1.8;
 }
 </style>
 """, unsafe_allow_html=True)
 
-# ── Header ───────────────────────────────────
-st.markdown("""
-<div class="page-header">
-    <h1>Detailed Diagnostic Report</h1>
-    <p>Structural inspection analysis — LangChain + Llama 3.3 70B</p>
-</div>
-""", unsafe_allow_html=True)
 
 # ── Sidebar ──────────────────────────────────
 with st.sidebar:
@@ -174,38 +312,41 @@ with st.sidebar:
         api_key = st.secrets.get("GROQ_API_KEY", None) or os.getenv("GROQ_API_KEY")
     except Exception:
         api_key = os.getenv("GROQ_API_KEY")
-        
+
     st.markdown("**DDR Generator**")
-    st.markdown("<hr style='border:none;border-top:1px solid #e2e2de;margin:0.6rem 0'>",
-                unsafe_allow_html=True)
-    st.markdown("""
-**Stack**
+    st.markdown("---")
+    st.markdown("**Stack**")
+    st.markdown("LangChain — Orchestration")
+    st.markdown("ChatGroq — Llama 3.3 70B")
+    st.markdown("PyMuPDF — PDF extraction")
+    st.markdown("ReportLab — PDF output")
+    st.markdown("---")
+    st.markdown("**Model**")
+    st.markdown("Temperature: 0.1")
+    st.markdown("Max tokens: 3,000")
+    st.markdown("Format: JSON")
+    st.markdown(
+        "<div style='margin-top:2.5rem;font-size:0.67rem;color:#ccc;"
+        "text-transform:uppercase;letter-spacing:0.1em;'>v1.0</div>",
+        unsafe_allow_html=True
+    )
 
-`LangChain` — Orchestration  
-`ChatGroq` — Llama 3.3 70B  
-`PyMuPDF` — PDF extraction  
-`ReportLab` — PDF output
 
----
-
-**Model**
-
-Temperature: `0.1`  
-Max tokens: `3,000`  
-Format: `JSON`
-    """)
-    st.markdown("""
-<div style="margin-top:3rem;font-size:0.7rem;color:#ccc;text-transform:uppercase;letter-spacing:0.08em;">
-v1.0
+# ── Hero ─────────────────────────────────────
+st.markdown("""
+<div class="hero">
+    <div class="hero-eyebrow">Structural Analysis Platform</div>
+    <div class="hero-title">Detailed Diagnostic<br>Report</div>
+    <div class="hero-desc">LangChain + Llama 3.3 70B — AI-assisted inspection synthesis</div>
 </div>
 """, unsafe_allow_html=True)
 
 
 # ── LangChain chain ──────────────────────────
-def get_chain(api_key):
+def get_chain(key):
     llm = ChatGroq(
         model="llama-3.3-70b-versatile",
-        api_key=api_key,
+        api_key=key,
         temperature=0.1,
         max_tokens=3000
     )
@@ -332,7 +473,8 @@ def build_pdf(ddr_data, all_images, output_path):
                 pil.save(buf, format="JPEG")
                 buf.seek(0)
                 story.append(RLImage(buf, width=12*cm, height=8*cm))
-                story.append(Paragraph(f"Figure: {img['doc'].upper()} — Page {img['page']}", caption))
+                story.append(Paragraph(
+                    f"Figure: {img['doc'].upper()} — Page {img['page']}", caption))
                 used_image_ids.add(img["id"])
                 added += 1
             except Exception:
@@ -370,7 +512,8 @@ def build_pdf(ddr_data, all_images, output_path):
     labels = {"Immediate": "[URGENT]", "Short-term": "[SOON]", "Long-term": "[PLANNED]"}
     for a in ddr_data.get("recommended_actions", []):
         p = a.get("priority", "")
-        story.append(Paragraph(f"<b>{labels.get(p, '')} [{p}]</b> {a.get('action', '')}", body))
+        story.append(Paragraph(
+            f"<b>{labels.get(p, '')} [{p}]</b> {a.get('action', '')}", body))
 
     story.append(Paragraph("6. Additional Notes", h1))
     story.append(Paragraph(ddr_data.get("additional_notes", "Not Available"), body))
@@ -381,36 +524,50 @@ def build_pdf(ddr_data, all_images, output_path):
     story.append(Spacer(1, 0.5*cm))
     story.append(HRFlowable(width="100%", thickness=1, color=colors.HexColor("#2196F3")))
     story.append(Paragraph(
-        "AI-generated report. Please verify findings with a qualified inspector.", footer_style))
+        "AI-generated report. Please verify findings with a qualified inspector.",
+        footer_style))
     doc.build(story)
 
 
 # ── Upload UI ────────────────────────────────
-col1, col2 = st.columns(2, gap="large")
+col1, col2 = st.columns(2, gap="medium")
 
 with col1:
-    st.markdown('<div class="field-label">Inspection Report</div>', unsafe_allow_html=True)
+    st.markdown("""
+    <div class="upload-label">
+        <span class="upload-dot"></span>Inspection Report
+    </div>""", unsafe_allow_html=True)
     inspection_file = st.file_uploader(
         "inspection", type=["pdf"], key="insp", label_visibility="collapsed")
     if inspection_file:
-        st.markdown(
-            f'<div class="file-meta">{inspection_file.name} &nbsp;·&nbsp; {round(inspection_file.size/1024, 1)} KB</div>',
-            unsafe_allow_html=True)
+        st.markdown(f"""
+        <div class="file-pill">
+            <span class="file-pill-dot"></span>
+            {inspection_file.name[:28]}{'…' if len(inspection_file.name) > 28 else ''}
+            &nbsp;·&nbsp; {round(inspection_file.size/1024, 1)} KB
+        </div>""", unsafe_allow_html=True)
 
 with col2:
-    st.markdown('<div class="field-label">Thermal Report</div>', unsafe_allow_html=True)
+    st.markdown("""
+    <div class="upload-label">
+        <span class="upload-dot"></span>Thermal Report
+    </div>""", unsafe_allow_html=True)
     thermal_file = st.file_uploader(
         "thermal", type=["pdf"], key="therm", label_visibility="collapsed")
     if thermal_file:
-        st.markdown(
-            f'<div class="file-meta">{thermal_file.name} &nbsp;·&nbsp; {round(thermal_file.size/1024, 1)} KB</div>',
-            unsafe_allow_html=True)
+        st.markdown(f"""
+        <div class="file-pill">
+            <span class="file-pill-dot"></span>
+            {thermal_file.name[:28]}{'…' if len(thermal_file.name) > 28 else ''}
+            &nbsp;·&nbsp; {round(thermal_file.size/1024, 1)} KB
+        </div>""", unsafe_allow_html=True)
 
-st.markdown('<div style="height:1rem"></div>', unsafe_allow_html=True)
+st.markdown("<div style='height:1.25rem'></div>", unsafe_allow_html=True)
 
+# ── Generate ─────────────────────────────────
 if st.button("Generate Report", type="primary", use_container_width=True):
     if not api_key:
-        st.error("GROQ_API_KEY is not configured. Set it in your environment or Streamlit secrets.")
+        st.error("GROQ_API_KEY is not configured. Add it to your .env file or Streamlit secrets.")
     elif not inspection_file or not thermal_file:
         st.error("Please upload both the inspection and thermal PDF documents to proceed.")
     else:
@@ -444,28 +601,29 @@ if st.button("Generate Report", type="primary", use_container_width=True):
                 build_pdf(ddr_data, all_images, tmp_path)
                 status.update(label="PDF ready.", state="complete")
 
-            # Metrics
+            # Stats
             n_areas   = len(ddr_data.get("area_wise_observations", []))
             n_risks   = len(ddr_data.get("severity_assessment", []))
             n_actions = len(ddr_data.get("recommended_actions", []))
             n_images  = len(all_images)
+
             st.markdown(f"""
-<div class="metrics-row">
-    <div class="metric-item">
-        <div class="metric-num">{n_areas}</div>
-        <div class="metric-lbl">Areas</div>
+<div class="stat-row">
+    <div class="stat-cell">
+        <div class="stat-num">{n_areas}</div>
+        <div class="stat-lbl">Areas</div>
     </div>
-    <div class="metric-item">
-        <div class="metric-num">{n_risks}</div>
-        <div class="metric-lbl">Risk Zones</div>
+    <div class="stat-cell">
+        <div class="stat-num">{n_risks}</div>
+        <div class="stat-lbl">Risk Zones</div>
     </div>
-    <div class="metric-item">
-        <div class="metric-num">{n_actions}</div>
-        <div class="metric-lbl">Actions</div>
+    <div class="stat-cell">
+        <div class="stat-num">{n_actions}</div>
+        <div class="stat-lbl">Actions</div>
     </div>
-    <div class="metric-item">
-        <div class="metric-num">{n_images}</div>
-        <div class="metric-lbl">Images</div>
+    <div class="stat-cell">
+        <div class="stat-num">{n_images}</div>
+        <div class="stat-lbl">Images</div>
     </div>
 </div>
 """, unsafe_allow_html=True)
@@ -479,43 +637,39 @@ if st.button("Generate Report", type="primary", use_container_width=True):
                     use_container_width=True
                 )
 
-            st.markdown(
-                "<hr style='border:none;border-top:1px solid #e2e2de;margin:1.5rem 0'>",
-                unsafe_allow_html=True)
-            st.markdown('<div class="field-label" style="margin-bottom:0.75rem">Report Preview</div>',
-                        unsafe_allow_html=True)
+            st.markdown('<div class="section-head">Report Preview</div>', unsafe_allow_html=True)
 
-            with st.expander("1. Property Issue Summary", expanded=True):
+            with st.expander("01 — Property Issue Summary", expanded=True):
                 st.write(ddr_data.get("property_issue_summary", "Not Available"))
 
-            with st.expander("2. Area-wise Observations"):
+            with st.expander("02 — Area-wise Observations"):
                 for obs in ddr_data.get("area_wise_observations", []):
                     st.markdown(f"**{obs.get('area')}**")
                     st.write(obs.get("observation"))
                     st.divider()
 
-            with st.expander("3. Probable Root Cause"):
+            with st.expander("03 — Probable Root Cause"):
                 for item in ddr_data.get("probable_root_cause", []):
                     st.markdown(f"**{item.get('issue')}:** {item.get('cause')}")
 
-            with st.expander("4. Severity Assessment"):
+            with st.expander("04 — Severity Assessment"):
                 import pandas as pd
                 sev = ddr_data.get("severity_assessment", [])
                 if sev:
                     st.dataframe(pd.DataFrame(sev), use_container_width=True)
 
-            with st.expander("5. Recommended Actions"):
+            with st.expander("05 — Recommended Actions"):
                 for a in ddr_data.get("recommended_actions", []):
                     st.markdown(f"**[{a.get('priority')}]** {a.get('action')}")
 
-            with st.expander("6. Additional Notes"):
+            with st.expander("06 — Additional Notes"):
                 st.write(ddr_data.get("additional_notes", "Not Available"))
 
-            with st.expander("7. Missing or Unclear Information"):
+            with st.expander("07 — Missing or Unclear Information"):
                 st.write(ddr_data.get("missing_or_unclear_info", "Not Available"))
 
             if all_images:
-                with st.expander(f"Extracted Images ({len(all_images)})"):
+                with st.expander(f"08 — Extracted Images ({len(all_images)})"):
                     cols = st.columns(3)
                     for i, img in enumerate(all_images):
                         with cols[i % 3]:
@@ -536,8 +690,8 @@ if st.button("Generate Report", type="primary", use_container_width=True):
 
 # ── Footer ───────────────────────────────────
 st.markdown("""
-<div style="margin-top:4rem;padding-top:1.25rem;border-top:1px solid #e2e2de;
-            font-size:0.72rem;color:#bbb;text-align:center;letter-spacing:0.03em;">
-    AI-generated reports are supplementary. Always verify with a qualified inspector.
+<div class="footer">
+    AI-generated reports are supplementary tools.<br>
+    Always verify findings with a qualified structural inspector.
 </div>
 """, unsafe_allow_html=True)
