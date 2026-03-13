@@ -32,17 +32,18 @@ load_dotenv()
 # ─────────────────────────────────────────────
 st.set_page_config(page_title="DDR Report Generator", page_icon="🏗️", layout="wide")
 st.title("🏗️ DDR Report Generator")
-st.caption("AI-powered Detailed Diagnostic Report — Powered by LangChain + Llama")
+st.caption("AI-powered Detailed Diagnostic Report — Powered by LangChain + llama-3.3-70b")
 
 # ─────────────────────────────────────────────
 # SIDEBAR
 # ─────────────────────────────────────────────
 with st.sidebar:
-    
+    api_key = st.secrets.get("GROQ_API_KEY", os.getenv("GROQ_API_KEY"))
+    st.markdown("---")
     st.markdown("""
 **Stack:**
 - `LangChain` — AI orchestration
-- `Model` — LLM (llama-3.3-70b)
+- `ChatGroq` — LLM (llama-3.3-70b)
 - `PyMuPDF` — PDF text + image extract
 - `ReportLab` — Final PDF output
     """)
@@ -299,18 +300,18 @@ st.markdown("---")
 
 if st.button("🚀 Generate DDR Report", type="primary", use_container_width=True):
     if not api_key:
-        st.error("Groq API key chahiye!")
+        st.error("Groq API key needed")
     elif not inspection_file or not thermal_file:
-        st.error("Dono PDFs upload karo!")
+        st.error("Upload both the PDFs")
     else:
         try:
             # Step 1: Extract
-            with st.status("📖 PDFs se content extract ho raha hai...", expanded=True) as status:
-                st.write("Inspection Report padh raha hoon...")
+            with st.status("📖 Content extracting from pdf....", expanded=True) as status:
+                st.write("Inspection Report Reading going...")
                 insp_text, insp_imgs = extract_pdf_content(inspection_file.read(), "inspection")
                 st.write(f"✅ Inspection: {len(insp_text)} chars, {len(insp_imgs)} images")
 
-                st.write("Thermal Report padh raha hoon...")
+                st.write("Thermal Report Reading going...")
                 therm_text, therm_imgs = extract_pdf_content(thermal_file.read(), "thermal")
                 st.write(f"✅ Thermal: {len(therm_text)} chars, {len(therm_imgs)} images")
 
@@ -330,11 +331,11 @@ if st.button("🚀 Generate DDR Report", type="primary", use_container_width=Tru
                     "thermal_text": therm_text[:3000],
                     "image_list": img_list[:1000]
                 })
-                st.write("✅ DDR generate ho gaya!")
+                st.write("✅ DDR generated !")
                 status.update(label="✅ DDR ready!", state="complete")
 
             # Step 3: PDF
-            with st.status("📝 PDF ban raha hai...", expanded=True) as status:
+            with st.status("📝 PDF making loading...", expanded=True) as status:
                 with tempfile.NamedTemporaryFile(suffix=".pdf", delete=False) as tmp:
                     tmp_path = tmp.name
                 build_pdf(ddr_data, all_images, tmp_path)
